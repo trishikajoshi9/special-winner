@@ -184,11 +184,11 @@ dashboard/
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### netlify(Recommended)
 
 ```bash
-npm install -g vercel
-vercel
+npm install -g netlify
+netlify
 ```
 
 ### Docker
