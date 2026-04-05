@@ -48,20 +48,32 @@ model Lead {
   source    String   @default("manual") // manual, whatsapp, email, api, form
   score     Int      @default(0) // Lead score 0-100
   notes     String?
-  
+
+  // Automation Fields
+  lastAutoScoredAt    DateTime?
+  lastAutoEngagedAt   DateTime?
+  lastAutoFollowupAt  DateTime?
+  autoEngagementCount Int       @default(0)
+  requiresReview      Boolean   @default(false)
+  conversionDate      DateTime?
+  dealValue           Float?
+
   // Relations
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversations Conversation[]
+  automationLogs AutomationLog[]
   activities Activity[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([userId])
   @@index([email])
   @@index([phone])
   @@index([status])
+  @@index([lastAutoScoredAt])
+  @@index([lastAutoEngagedAt])
 }
 
 // Conversation Model (Thread)
@@ -69,17 +81,25 @@ model Conversation {
   id        String   @id @default(cuid())
   title     String?
   platform  String   @default("chat") // chat, whatsapp, email, n8n
-  
+
+  // WhatsApp Automation Fields
+  externalId          String?   // Aisensy message ID
+  status              String    @default("active") // active, closed, archived
+  autoResponseEnabled Boolean   @default(false)
+  sentimentScore      Float?    // -1.0 to 1.0
+
   // Relations
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   messages  Message[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([leadId])
   @@index([platform])
+  @@index([status])
+  @@unique([platform, leadId, externalId])
 }
 
 // Message Model
@@ -125,19 +145,36 @@ model Activity {
   entityId  String
   oldValue  String?
   newValue  String?
-  
+
   // Relations
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   leadId    String?
   lead      Lead?    @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  
+
   createdAt DateTime @default(now())
-  
+
   @@index([userId])
   @@index([leadId])
   @@index([entity])
   @@index([action])
+}
+
+// AutomationLog Model (Automation Audit Trail)
+model AutomationLog {
+  id        String   @id @default(cuid())
+  action    String   // auto_scored, auto_engaged, follow_up, error, reply_received
+  status    String   // success, failed, pending
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  metadata  String?  // JSON: { messageId, retryCount, error, aisensy_response }
+
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@index([action])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // Integration Model
@@ -158,12 +195,15 @@ model Integration {
 model Analytics {
   id        String   @id @default(cuid())
   date      DateTime @default(now())
-  metric    String   // total_leads, contacted, converted, etc.
-  value     Int
-  
+  metric    String   // total_leads, contacted, converted, hot_leads, revenue, etc.
+  value     Int      @default(0)
+  floatValue Float?   // For revenue and decimal metrics
+  leadSource String?  // email, whatsapp, manual, etc. (optional breakdown)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([date])
   @@index([metric])
+  @@index([leadSource])
 }
