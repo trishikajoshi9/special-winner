@@ -41,15 +41,6 @@
     },
     "plugins": [
       [
-        "expo-permissions",
-        {
-          "location": "Allow ${APP_NAME} to access your location.",
-          "contacts": "Allow ${APP_NAME} to access your contacts.",
-          "camera": "Allow ${APP_NAME} to access your camera.",
-          "mediaLibrary": "Allow ${APP_NAME} to access your media library."
-        }
-      ],
-      [
         "@react-native-firebase/messaging",
         {
           "useFcm": true
