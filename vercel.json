@@ -1,0 +1,36 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "projectSettings": {
+    "sourceFilesOutsideRootDirectory": true,
+    "nodeVersion": "18.x"
+  },
+  "env": [
+    {
+      "key": "DATABASE_URL",
+      "description": "PostgreSQL database URL"
+    },
+    {
+      "key": "NEXTAUTH_SECRET",
+      "description": "NextAuth secret key"
+    },
+    {
+      "key": "NEXTAUTH_URL",
+      "description": "NextAuth URL (for production: https://yourdomain.vercel.app)"
+    },
+    {
+      "key": "GMAIL_CLIENT_ID",
+      "description": "Gmail OAuth Client ID"
+    },
+    {
+      "key": "GMAIL_CLIENT_SECRET",
+      "description": "Gmail OAuth Client Secret"
+    },
+    {
+      "key": "GMAIL_REDIRECT_URI",
+      "description": "Gmail redirect URI (for production: https://yourdomain.vercel.app/api/auth/gmail/callback)"
+    }
+  ]
+}
