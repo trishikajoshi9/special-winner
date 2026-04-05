@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  role      String   @default("user") // admin, user, agent
+  status    String   @default("active") // active, inactive, suspended
+  phone     String?
+  company   String?
+  
+  // Gmail Integration
+  gmailAccessToken  String?
+  gmailRefreshToken String?
+  
+  // Relations
+  leads     Lead[]
+  chats     Chat[]
+  messages  Message[]
+  activities Activity[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Lead Model
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  whatsapp  String?
+  company   String?
+  status    String   @default("new") // new, contacted, qualified, converted, lost
+  source    String   @default("manual") // manual, whatsapp, email, api, form
+  score     Int      @default(0) // Lead score 0-100
+  notes     String?
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  activities Activity[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+}
+
+// Conversation Model (Thread)
+model Conversation {
+  id        String   @id @default(cuid())
+  title     String?
+  platform  String   @default("chat") // chat, whatsapp, email, n8n
+  
+  // Relations
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([leadId])
+  @@index([platform])
+}
+
+// Message Model
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  senderType String @default("user") // user, ai, system, lead
+  metadata  String? // JSON string for extra data
+  
+  // Relations
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([conversationId])
+}
+
+// Chat Model (Session)
+model Chat {
+  id        String   @id @default(cuid())
+  title     String?
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+// Activity Model (Audit Trail)
+model Activity {
+  id        String   @id @default(cuid())
+  action    String // created, updated, deleted, viewed, contacted
+  entity    String // Lead, User, Conversation, etc.
+  entityId  String
+  oldValue  String?
+  newValue  String?
+  
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leadId    String?
+  lead      Lead?    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([leadId])
+  @@index([entity])
+  @@index([action])
+}
+
+// Integration Model
+model Integration {
+  id        String   @id @default(cuid())
+  type      String   // whatsapp, email, n8n, gmail, aisensy
+  name      String
+  status    String   @default("active")
+  config    String   // JSON string
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([type])
+}
+
+// Analytics Model
+model Analytics {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now())
+  metric    String   // total_leads, contacted, converted, etc.
+  value     Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([date])
+  @@index([metric])
+}
