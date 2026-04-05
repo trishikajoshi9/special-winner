@@ -1,0 +1,277 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 4px 0 0 0;
+}
+
+.refreshButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.refreshButton:active {
+  transform: scale(0.95);
+}
+
+.controlsSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.checkbox {
+  margin-right: 8px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.lastRefresh {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #3b82f6;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.metricIcon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.metricContent {
+  flex: 1;
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metricValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.metricTrend {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.statusSection {
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.statusIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0;
+}
+
+.statusValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 4px 0 0 0;
+}
+
+.lastActionSection {
+  padding: 24px;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.lastActionTime {
+  font-size: 14px;
+  color: #1e40af;
+  margin: 0;
+}
+
+.tipsSection {
+  padding: 24px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+}
+
+.tipsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tipsList li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #78350f;
+  margin: 0;
+}
+
+.tipsList li:before {
+  content: '';
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .refreshButton {
+    align-self: flex-end;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .metricValue {
+    font-size: 24px;
+  }
+}
