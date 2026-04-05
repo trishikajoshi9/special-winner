@@ -60,6 +60,10 @@ export async function syncGmailLeads(userId: string) {
   const gmail = google.gmail({ version: 'v1', auth: client });
   const contacts = google.people({ version: 'v1', auth: client });
 
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/webhooks/leads/import`;
+
+  let importedCount = 0;
+
   try {
     // Fetch messages from Gmail inbox
     const messagesRes = await gmail.users.messages.list({
@@ -85,24 +89,25 @@ export async function syncGmailLeads(userId: string) {
       const email = emailMatch ? emailMatch[1] : from;
       const name = from.replace(/<[^>]+>/, '').trim() || email;
 
-      // Check if lead already exists
-      const existingLead = await prisma.lead.findFirst({
-        where: {
-          email,
-          userId,
-        },
-      });
-
-      if (!existingLead) {
-        await prisma.lead.create({
-          data: {
+      // Send to webhook for processing (will auto-score and engage if hot)
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
             name,
             email,
+            subject,
             source: 'email',
             userId,
-            notes: `Synced from Gmail: ${subject}`,
-          },
+          }),
         });
+
+        if (response.ok) {
+          importedCount++;
+        }
+      } catch (error) {
+        console.error(`Error importing lead ${email}:`, error);
       }
     }
 
@@ -118,30 +123,33 @@ export async function syncGmailLeads(userId: string) {
     for (const contact of connections) {
       const contactName = contact.names?.[0]?.displayName || '';
       const contactEmail = contact.emailAddresses?.[0]?.value || '';
+      const contactPhone = contact.phoneNumbers?.[0]?.value || '';
 
       if (contactEmail) {
-        const existingLead = await prisma.lead.findFirst({
-          where: {
-            email: contactEmail,
-            userId,
-          },
-        });
-
-        if (!existingLead) {
-          await prisma.lead.create({
-            data: {
+        // Send to webhook for processing
+        try {
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
               name: contactName,
               email: contactEmail,
-              phone: contact.phoneNumbers?.[0]?.value,
+              phone: contactPhone,
               source: 'email',
               userId,
-            },
+            }),
           });
+
+          if (response.ok) {
+            importedCount++;
+          }
+        } catch (error) {
+          console.error(`Error importing contact ${contactEmail}:`, error);
         }
       }
     }
 
-    return { success: true, message: 'Synced Gmail leads' };
+    return { success: true, message: `Synced ${importedCount} Gmail leads`, imported: importedCount };
   } catch (error) {
     console.error('Gmail sync error:', error);
     throw error;

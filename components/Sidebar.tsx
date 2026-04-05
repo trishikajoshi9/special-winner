@@ -28,6 +28,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     { name: 'Leads', href: '/leads', icon: FiUsers, color: 'from-purple-500 to-purple-600' },
     { name: 'Chat', href: '/chat', icon: FiMessageSquare, color: 'from-green-500 to-green-600' },
     { name: 'Analytics', href: '/analytics', icon: FiBarChart2, color: 'from-orange-500 to-orange-600' },
+    { name: 'Automation', href: '/automation', icon: FiBarChart2, color: 'from-red-500 to-red-600' },
     { name: 'Settings', href: '/settings', icon: FiSettings, color: 'from-gray-500 to-gray-600' },
   ];
 
